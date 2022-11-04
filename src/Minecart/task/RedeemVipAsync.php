@@ -12,7 +12,7 @@ use Minecart\Minecart;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
-class RedeemVipAsync extends AsyncTask
+class RedeemKeyAsync extends AsyncTask
 {
     private $username;
     private $key;
@@ -33,7 +33,7 @@ class RedeemVipAsync extends AsyncTask
         $api->setAuthorization($this->authorization);
         $api->setShopServer($this->shopServer);
         $api->setParams(["username" => $this->username, "key" => $this->key]);
-        $api->setURL(API::REDEEMVIP_URI);
+        $api->setURL(API::REDEEMKEY_URI);
 
         $this->setResult($api->send());
     }
@@ -63,7 +63,7 @@ class RedeemVipAsync extends AsyncTask
                 $form = new Form();
                 $form->setTitle("Resgatar VIP");
                 $form->setPlaceholder("Insira sua key");
-                $form->setRedeemType(Form::REDEEM_VIP);
+                $form->setRedeemType(Form::REDEEM_KEY);
                 $form->setKey($this->key);
 
                 $errors = new Errors();

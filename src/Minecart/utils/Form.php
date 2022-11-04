@@ -7,7 +7,7 @@ use jojoe77777\FormAPI\ModalForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\player\Player;
 use Minecart\task\RedeemCashAsync;
-use Minecart\task\RedeemVipAsync;
+use Minecart\task\RedeemKeyAsync;
 use Minecart\Minecart;
 
 class Form
@@ -20,7 +20,7 @@ class Form
     private $message;
     private $cooldown;
 
-    const REDEEM_VIP = 1;
+    const REDEEM_KEY = 1;
     const REDEEM_CASH = 2;
 
     public function __construct()
@@ -86,7 +86,7 @@ class Form
 
                     $this->setTitle($title);
                     $this->setPlaceholder($placeholder);
-                    $this->setRedeemType(self::REDEEM_VIP);
+                    $this->setRedeemType(self::REDEEM_KEY);
                     $this->showRedeem($player);
                     break;
                 case 1: //CASH
@@ -162,7 +162,7 @@ class Form
                 $this->setTitle($this->title);
                 $this->setKey($key);
                 $this->setPlaceholder($this->placeholder);
-                $this->setRedeemType(self::REDEEM_VIP);
+                $this->setRedeemType(self::REDEEM_KEY);
                 $this->showRedeem($player, $error);
                 return;
             }
@@ -172,7 +172,7 @@ class Form
             $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
 
             switch ($this->redeemType) {
-                case self::REDEEM_VIP:
+                case self::REDEEM_KEY:
                     $form = new ModalForm(function(Player $player, bool $data = null) use ($username, $authorization, $shopServer, $key){
                         if (empty($data)) {
                             return;
@@ -184,7 +184,7 @@ class Form
                                 $messages->sendWaitingResponseInfo($player);
 
                                 $this->cooldown->setPlayerInCooldown($player);
-                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemVipAsync($username, $key, $authorization, $shopServer));
+                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($username, $key, $authorization, $shopServer));
                                 break;
                         }
                     });
@@ -230,7 +230,7 @@ class Form
             $this->setTitle($title);
             $this->setPlaceholder($placeholder);
             $this->setKey($key);
-            $this->setRedeemType(self::REDEEM_VIP);
+            $this->setRedeemType(self::REDEEM_KEY);
             $this->showRedeem($player);
             $this->cooldown->removePlayerCooldown($player);
         });

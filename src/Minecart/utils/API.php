@@ -11,8 +11,11 @@ class API
 
     const URI = "https://api.minecart.com.br";
     const MYKEYS_URI = self::URI . "/shop/player/mykeys";
-    const REDEEMVIP_URI = self::URI . "/shop/player/redeemvip";
+    const REDEEMKEY_URI = self::URI . "/shop/player/redeemkey";
     const REDEEMCASH_URI = self::URI . "/shop/player/redeemcash";
+
+    const DELIVERY_PENDING_URI = self::URI . "/shop/delivery/pending";
+    const DELIVERY_CONFIRM_URI = self::URI . "/shop/delivery/confirm";
 
     const INVALID_KEY = 40010;
     const INVALID_SHOP_SERVER = 40011;
