@@ -7,19 +7,19 @@ use Minecart\Minecart;
 
 class Errors
 {
-    public function getError(Player $player, int $code, bool $return = false) : string
+    public function getError(Player $player, int $code, bool $return = false): string
     {
         switch ($code) {
-            case 40010:
+            case API::INVALID_KEY:
                 $message = Minecart::getInstance()->getMessage("error.invalid-key");
                 break;
-            case 40011:
+            case API::INVALID_SHOP_SERVER:
                 $message = Minecart::getInstance()->getMessage("error.invalid-shopserver");
                 break;
-            case 40012:
+            case API::DONT_HAVE_CASH:
                 $message = Minecart::getInstance()->getMessage("error.nothing-products-cash");
                 break;
-            case 40013:
+            case API::COMMANDS_NOT_REGISTRED:
                 $message = Minecart::getInstance()->getMessage("error.commands-product-not-registred");
                 break;
             case 401:

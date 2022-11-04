@@ -31,7 +31,7 @@ class Utils
         }
     }
 
-    public static function lowerCase($string) : string
+    public static function lowerCase($string): string
     {
         return strtolower($string);
     }

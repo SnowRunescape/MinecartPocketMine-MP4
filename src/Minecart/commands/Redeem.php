@@ -17,7 +17,7 @@ class Redeem extends Command
         $this->setAliases(["resgatar"]);
     }
 
-    public function execute(CommandSender $sender, string $label, array $args) : bool
+    public function execute(CommandSender $sender, string $label, array $args): bool
     {
         if (!$sender instanceof Player) {
             $sender->sendMessage(Minecart::getInstance()->getMessage("error.player-only"));

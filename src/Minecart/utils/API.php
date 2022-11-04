@@ -14,6 +14,13 @@ class API
     const REDEEMVIP_URI = self::URI . "/shop/player/redeemvip";
     const REDEEMCASH_URI = self::URI . "/shop/player/redeemcash";
 
+    const INVALID_KEY = 40010;
+    const INVALID_SHOP_SERVER = 40011;
+    const DONT_HAVE_CASH = 40012;
+    const COMMANDS_NOT_REGISTRED = 40013;
+
+    const DELAY = 60 * 20;
+
     private $url;
     private $params;
 
@@ -37,7 +44,7 @@ class API
         $this->shopServer = $shopServer;
     }
 
-    public function send() : array
+    public function send(): array
     {
         try {
             $curl = curl_init();
@@ -54,7 +61,8 @@ class API
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-            $response = json_decode(curl_exec($curl), true);
+            $response = curl_exec($curl);
+            $response = json_decode($response, true);
 
             $response = [
                 "statusCode" => curl_getinfo($curl)["http_code"],

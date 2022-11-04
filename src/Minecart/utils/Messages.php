@@ -8,7 +8,7 @@ use Minecart\Minecart;
 
 class Messages
 {
-    public static function getMessage(string $key) : string
+    public static function getMessage(string $key): string
     {
         return Utils::getArrayKeyByString(Minecart::getInstance()->messages, $key);
     }

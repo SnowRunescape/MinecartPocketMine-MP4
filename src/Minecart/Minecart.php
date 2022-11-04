@@ -2,16 +2,16 @@
 
 namespace Minecart;
 
-use Minecart\commands\Redeem;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
 use Minecart\utils\Configuration;
 use Minecart\utils\Messages;
 
 class Minecart extends PluginBase
 {
-    const VERSION = "2.1.0";
+    const VERSION = "2.2.0";
 
     public $messages = [];
     public $config = [];
@@ -20,52 +20,58 @@ class Minecart extends PluginBase
 
     public static $instance;
 
-    public function onEnable() : void
+    public function onEnable(): void
     {
         $this->registerInstance();
         $this->registerCommands();
+        $this->registerSchedulers();
         $this->registerConfig();
         $this->registerMessages();
 
         $this->getServer()->getLogger()->info("§7Plugin §aMinecart§7 ativado com sucesso!");
     }
 
-    public function registerCommands() : void
+    public function registerCommands(): void
     {
         $this->getServer()->getCommandMap()->register("mykeys", new MyKeys());
         $this->getServer()->getCommandMap()->register("redeem", new Redeem());
     }
 
-    public function registerInstance() : void
+    public function registerSchedulers()
+    {
+        $this->getServer()->getScheduler()->scheduleRepeatingTask(new Scheduler($this), 60 * 20);
+    }
+
+    public function registerInstance(): void
     {
         self::$instance = $this;
     }
 
-    public static function getInstance() : Minecart
+    public static function getInstance(): Minecart
     {
         return self::$instance;
     }
 
-    public function registerMessages() : void
+    public function registerMessages(): void
     {
         $this->saveResource("messages.yml");
         $messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
         $this->messages = $messages->getAll();
     }
 
-    public function registerConfig() : void
+    public function registerConfig(): void
     {
         $this->saveResource("config.yml");
         $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
         $this->config = $config->getAll();
     }
 
-    public function getMessage(string $key) : string
+    public function getMessage(string $key): string
     {
         return Messages::getMessage($key);
     }
 
-    public function getCfg(string $key) : string
+    public function getCfg(string $key): string
     {
         return Configuration::getConfig($key);
     }

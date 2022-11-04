@@ -38,27 +38,27 @@ class Form
         $this->key = $key;
     }
 
-    public function setTitle(string $title) : void
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    public function setRedeemType(string $redeemType) : void
+    public function setRedeemType(string $redeemType): void
     {
         $this->redeemType = $redeemType;
     }
 
-    public function setProducts(array $products) : void
+    public function setProducts(array $products): void
     {
         $this->products = $products;
     }
 
-    public function setMessage(string $message) : void
+    public function setMessage(string $message): void
     {
         $this->message = $message;
     }
 
-    public function showFormError(Player $player) : void
+    public function showFormError(Player $player): void
     {
         $form = new SimpleForm(function(Player $player, int $data = null) {
             if (empty($data)) {
@@ -72,7 +72,7 @@ class Form
         $player->sendForm($form);
     }
 
-    public function showChoose(Player $player) : void
+    public function showChoose(Player $player): void
     {
         $form = new SimpleForm(function (Player $player, int $data = null) {
             if (is_null($data)) {
@@ -138,7 +138,7 @@ class Form
         $player->sendForm($form);
     }
 
-    public function showRedeem(Player $player, string $error = "") : void
+    public function showRedeem(Player $player, string $error = ""): void
     {
         $form = new CustomForm(function(Player $player, array $data = null){
             if (empty($data)) {
@@ -215,7 +215,7 @@ class Form
     }
 
 
-    public function showMyKeys(Player $player) : void
+    public function showMyKeys(Player $player): void
     {
         $form = new SimpleForm(function(Player $player, int $data = null) {
             if (is_null($data)) {

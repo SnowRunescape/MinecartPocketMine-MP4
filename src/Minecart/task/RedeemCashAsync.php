@@ -25,7 +25,7 @@ class RedeemCashAsync extends AsyncTask
         $this->shopServer = $shopServer;
     }
 
-    public function onRun() : void
+    public function onRun(): void
     {
         $api = new API();
         $api->setAuthorization($this->authorization);
@@ -36,7 +36,7 @@ class RedeemCashAsync extends AsyncTask
         $this->setResult($api->send());
     }
 
-    public function onCompletion() : void
+    public function onCompletion(): void
     {
         $player = Minecart::getInstance()->getServer()->getPlayerExact($this->username);
         $response = $this->getResult();
@@ -72,7 +72,7 @@ class RedeemCashAsync extends AsyncTask
         }
     }
 
-    private function parseText(string $text, Player $player, array $response) : string
+    private function parseText(string $text, Player $player, array $response): string
     {
         return str_replace(["{player.name}", "{cash.quantity}"], [$player->getName(), $response["cash"]], $text);
     }
