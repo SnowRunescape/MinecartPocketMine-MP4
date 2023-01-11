@@ -8,11 +8,6 @@ use Minecart\Minecart;
 
 class Messages
 {
-    public static function getMessage(string $key): string
-    {
-        return Utils::getArrayKeyByString(Minecart::getInstance()->messages, $key);
-    }
-
     public function sendWaitingResponseInfo(Player $player)
     {
         $mode = Minecart::getInstance()->getCfg("config.waiting_response_mode");

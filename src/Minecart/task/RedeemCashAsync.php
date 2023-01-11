@@ -2,38 +2,28 @@
 
 namespace Minecart\task;
 
-use pocketmine\console\ConsoleCommandSender;
 use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\lang\Language;
 use Minecart\utils\Form;
-use Minecart\utils\API;
 use Minecart\Minecart;
+use Minecart\MinecartAPI;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
 class RedeemCashAsync extends AsyncTask
 {
     private $username;
-    private $authorization;
-    private $shopServer;
 
-    public function __construct(string $username, string $authorization, string $shopServer)
+    public function __construct(string $username)
     {
         $this->username = $username;
-        $this->authorization = $authorization;
-        $this->shopServer = $shopServer;
     }
 
     public function onRun(): void
     {
-        $api = new API();
-        $api->setAuthorization($this->authorization);
-        $api->setShopServer($this->shopServer);
-        $api->setParams(["username" => $this->username]);
-        $api->setURL(API::REDEEMCASH_URI);
+        $result = MinecartAPI::redeemCash($this->username);
 
-        $this->setResult($api->send());
+        $this->setResult($result);
     }
 
     public function onCompletion(): void
@@ -49,7 +39,7 @@ class RedeemCashAsync extends AsyncTask
 
                 $command = $this->parseText($response["command"], $player, $response);
 
-                if (Minecart::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(Minecart::getInstance()->getServer(), new Language("eng")), $command)) {
+                if (Minecart::getInstance()->dispatchCommand($command)) {
                     $messages = new Messages();
                     $messages->sendGlobalInfo($player, "cash", $response["cash"]);
                 } else {

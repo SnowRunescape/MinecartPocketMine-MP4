@@ -6,12 +6,15 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
-use Minecart\utils\Configuration;
-use Minecart\utils\Messages;
+use Minecart\utils\Utils;
+use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\Language;
 
 class Minecart extends PluginBase
 {
-    const VERSION = "2.2.0";
+    const VERSION = "2.3.0";
+
+    const TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public $messages = [];
     public $config = [];
@@ -39,7 +42,7 @@ class Minecart extends PluginBase
 
     public function registerSchedulers()
     {
-        $this->getServer()->getScheduler()->scheduleRepeatingTask(new Scheduler($this), 60 * 20);
+        $this->getScheduler()->scheduleRepeatingTask(new Scheduler($this), MinecartAPI::DELAY);
     }
 
     public function registerInstance(): void
@@ -68,11 +71,18 @@ class Minecart extends PluginBase
 
     public function getMessage(string $key): string
     {
-        return Messages::getMessage($key);
+        return Utils::getArrayKeyByString($this->messages, $key);
     }
 
     public function getCfg(string $key): string
     {
-        return Configuration::getConfig($key);
+        return Utils::getArrayKeyByString($this->config, $key);
+    }
+
+    public function dispatchCommand(string $command): bool
+    {
+        $consoleCommandSender = new ConsoleCommandSender($this->getServer(), new Language("eng"));
+
+        return $this->getServer()->dispatchCommand($consoleCommandSender, $command);
     }
 }

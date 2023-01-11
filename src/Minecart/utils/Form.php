@@ -96,8 +96,6 @@ class Form
                         }
 
                         $username = $player->getName();
-                        $authorization = Minecart::getInstance()->getCfg("Minecart.ShopKey");
-                        $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
 
                         if ($data) {
                             if ($this->cooldown->isInCooldown($player)) {
@@ -114,7 +112,7 @@ class Form
                             $messages->sendWaitingResponseInfo($player);
 
                             $this->cooldown->setPlayerInCooldown($player);
-                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($username, $authorization, $shopServer));
+                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($username));
                         }
                     });
 
@@ -168,12 +166,10 @@ class Form
             }
 
             $username = $player->getName();
-            $authorization = Minecart::getInstance()->getCfg("Minecart.ShopKey");
-            $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
 
             switch ($this->redeemType) {
                 case self::REDEEM_KEY:
-                    $form = new ModalForm(function(Player $player, bool $data = null) use ($username, $authorization, $shopServer, $key){
+                    $form = new ModalForm(function(Player $player, bool $data = null) use ($username, $key){
                         if (empty($data)) {
                             return;
                         }
@@ -184,7 +180,7 @@ class Form
                                 $messages->sendWaitingResponseInfo($player);
 
                                 $this->cooldown->setPlayerInCooldown($player);
-                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($username, $key, $authorization, $shopServer));
+                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($username, $key));
                                 break;
                         }
                     });

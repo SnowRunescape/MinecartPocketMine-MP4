@@ -30,9 +30,4 @@ class Utils
             return $arr[$key] ?? "§7Mensagem §c{$key} §7não encontrada";
         }
     }
-
-    public static function lowerCase($string): string
-    {
-        return strtolower($string);
-    }
 }

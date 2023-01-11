@@ -2,7 +2,7 @@
 
 namespace Minecart;
 
-use Minecart\utils\API;
+use Minecart\helpers\PlayerHelper;
 
 class AutomaticDelivery
 {
@@ -12,22 +12,52 @@ class AutomaticDelivery
 
     public function run(): void
     {
-        $api = new API();
-        $api->setAuthorization($this->authorization);
-        $api->setShopServer($this->shopServer);
-        $api->setParams(["username" => $this->username]);
-        $api->setURL(API::DELIVERY_PENDING_URI);
+        $minecartKeys = MinecartAPI::deliveryPending();
+        $minecartKeys = $this->filterByAutomaticDelivery($minecartKeys);
 
-        $this->setResult($api->send());
+        if (empty($minecartKeys)) {
+            return;
+        }
+
+        $productsIds = array_column($minecartKeys, "id");
+
+        if (!MinecartAPI::deliveryConfirm($productsIds)) {
+            return;
+        }
+
+        foreach ($minecartKeys as $minecartKey) {
+            $this->executeCommands($minecartKey["commands"]);
+        }
     }
 
-    public function onCompletion(): void
+    private function filterByAutomaticDelivery(array $minecartKeys)
     {
-        // TODO
+        $tempMinecartKeys = [];
+
+        foreach ($minecartKeys as $minecartKey) {
+            if (
+                $minecartKey["automatic_delivery"] == AutomaticDelivery::ANYTIME || (
+                    !Minecart::getInstance()->getCfg("config.preventLoginDelivery") &&
+                    PlayerHelper::playerOnline($minecartKey["username"])
+                ) || (
+                    Minecart::getInstance()->getCfg("config.preventLoginDelivery") &&
+                    PlayerHelper::playerOnline($minecartKey["username"]) &&
+                    PlayerHelper::playerTimeOnline($minecartKey["username"]) > Minecart::TIME_PREVENT_LOGIN_DELIVERY
+                )
+            ) {
+                $tempMinecartKeys[] = $minecartKey;
+            }
+        }
+
+        return $tempMinecartKeys;
     }
 
     private function executeCommands(array $commands): void
     {
-
+        foreach ($commands as $command) {
+            if (!Minecart::getInstance()->dispatchCommand($command)) {
+                // TODO: LOG ERRO
+            }
+        }
     }
 }
