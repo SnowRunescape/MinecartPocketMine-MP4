@@ -7,6 +7,7 @@ use pocketmine\utils\Config;
 use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
 use Minecart\utils\Utils;
+use PlayerListener;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\Language;
 
@@ -16,12 +17,12 @@ class Minecart extends PluginBase
 
     const TIME_PREVENT_LOGIN_DELIVERY = 120;
 
-    public $messages = [];
-    public $config = [];
+    public array $messages = [];
+    public array $config = [];
+    public array $playerTimeOnline = [];
+    public array $cooldown = [];
 
-    public $cooldown = [];
-
-    public static $instance;
+    public static Minecart $instance;
 
     public function onEnable(): void
     {
@@ -38,6 +39,11 @@ class Minecart extends PluginBase
     {
         $this->getServer()->getCommandMap()->register("mykeys", new MyKeys());
         $this->getServer()->getCommandMap()->register("redeem", new Redeem());
+    }
+
+    public function registerEvents()
+    {
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
     }
 
     public function registerSchedulers()
