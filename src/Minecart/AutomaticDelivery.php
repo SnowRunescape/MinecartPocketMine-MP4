@@ -36,7 +36,7 @@ class AutomaticDelivery
 
         foreach ($minecartKeys as $minecartKey) {
             if (
-                $minecartKey["automatic_delivery"] == AutomaticDelivery::ANYTIME || (
+                $minecartKey["delivery_automatic"] == AutomaticDelivery::ANYTIME || (
                     !Minecart::getInstance()->getCfg("config.preventLoginDelivery") &&
                     PlayerHelper::playerOnline($minecartKey["username"])
                 ) || (
@@ -56,7 +56,7 @@ class AutomaticDelivery
     {
         foreach ($commands as $command) {
             if (!Minecart::getInstance()->dispatchCommand($command)) {
-                // TODO: LOG ERRO
+                MinecartLog::executeCommand($command);
             }
         }
     }

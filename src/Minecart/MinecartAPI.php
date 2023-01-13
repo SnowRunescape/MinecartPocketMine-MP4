@@ -37,7 +37,9 @@ class MinecartAPI
 
     public static function deliveryPending(): array
     {
-        return MinecartAPI::send("/shop/delivery/pending");
+        $result = MinecartAPI::send("/shop/delivery/pending");
+
+        return $result["response"]["products"] ?? [];
     }
 
     public static function deliveryConfirm(array $products): bool
@@ -49,7 +51,7 @@ class MinecartAPI
         return $result["statusCode"] == 200;
     }
 
-    private function send(string $url, array $params = []): array
+    private static function send(string $url, array $params = []): array
     {
         try {
             $curl = curl_init();

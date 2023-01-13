@@ -6,8 +6,8 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
+use Minecart\listeners\PlayerListener;
 use Minecart\utils\Utils;
-use PlayerListener;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\Language;
 
