@@ -23,35 +23,46 @@ class Minecart extends PluginBase
     public array $cooldown = [];
 
     public static Minecart $instance;
+    public MinecartAuthorizationAPI $minecartAuthorizationAPI;
 
     public function onEnable(): void
     {
         $this->registerInstance();
-        $this->registerCommands();
-        $this->registerSchedulers();
         $this->registerConfig();
         $this->registerMessages();
+        $this->registerMinecartAuthorizationAPI();
+        $this->registerEvents();
+        $this->registerCommands();
+        $this->registerSchedulers();
 
         $this->getServer()->getLogger()->info("§7Plugin §aMinecart§7 ativado com sucesso!");
     }
 
-    public function registerCommands(): void
+    private function registerMinecartAuthorizationAPI(): void
+    {
+        $this->minecartAuthorizationAPI = new MinecartAuthorizationAPI(
+            $this->getCfg("Minecart.ShopKey"),
+            $this->getCfg("Minecart.ShopServer")
+        );
+    }
+
+    private function registerCommands(): void
     {
         $this->getServer()->getCommandMap()->register("mykeys", new MyKeys());
         $this->getServer()->getCommandMap()->register("redeem", new Redeem());
     }
 
-    public function registerEvents()
+    private function registerEvents()
     {
         $this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
     }
 
-    public function registerSchedulers()
+    private function registerSchedulers()
     {
         $this->getScheduler()->scheduleRepeatingTask(new Scheduler($this), MinecartAPI::DELAY);
     }
 
-    public function registerInstance(): void
+    private function registerInstance(): void
     {
         self::$instance = $this;
     }
@@ -61,14 +72,19 @@ class Minecart extends PluginBase
         return self::$instance;
     }
 
-    public function registerMessages(): void
+    public function getMinecartAuthorizationAPI(): MinecartAuthorizationAPI
+    {
+        return $this->minecartAuthorizationAPI;
+    }
+
+    private function registerMessages(): void
     {
         $this->saveResource("messages.yml");
         $messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
         $this->messages = $messages->getAll();
     }
 
-    public function registerConfig(): void
+    private function registerConfig(): void
     {
         $this->saveResource("config.yml");
         $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);

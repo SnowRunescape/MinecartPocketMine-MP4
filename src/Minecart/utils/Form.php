@@ -95,6 +95,7 @@ class Form
                             return;
                         }
 
+                        $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
                         $username = $player->getName();
 
                         if ($data) {
@@ -112,7 +113,7 @@ class Form
                             $messages->sendWaitingResponseInfo($player);
 
                             $this->cooldown->setPlayerInCooldown($player);
-                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($username));
+                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($minecartAuthorizationAPI, $username));
                         }
                     });
 
@@ -138,7 +139,7 @@ class Form
 
     public function showRedeem(Player $player, string $error = ""): void
     {
-        $form = new CustomForm(function(Player $player, array $data = null){
+        $form = new CustomForm(function(Player $player, array $data = null) {
             if (empty($data)) {
                 return;
             }
@@ -165,11 +166,12 @@ class Form
                 return;
             }
 
+            $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
             $username = $player->getName();
 
             switch ($this->redeemType) {
                 case self::REDEEM_KEY:
-                    $form = new ModalForm(function(Player $player, bool $data = null) use ($username, $key){
+                    $form = new ModalForm(function(Player $player, bool $data = null) use ($minecartAuthorizationAPI, $username, $key) {
                         if (empty($data)) {
                             return;
                         }
@@ -180,7 +182,7 @@ class Form
                                 $messages->sendWaitingResponseInfo($player);
 
                                 $this->cooldown->setPlayerInCooldown($player);
-                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($username, $key));
+                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($minecartAuthorizationAPI, $username, $key));
                                 break;
                         }
                     });

@@ -7,23 +7,26 @@ use pocketmine\scheduler\AsyncTask;
 use Minecart\utils\Form;
 use Minecart\Minecart;
 use Minecart\MinecartAPI;
+use Minecart\MinecartAuthorizationAPI;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
 class RedeemKeyAsync extends AsyncTask
 {
-    private $username;
-    private $key;
+    private MinecartAPI $minecartAPI;
+    private string $username;
+    private string $key;
 
-    public function __construct(string $username, string $key)
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI, string $username, string $key)
     {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
         $this->username = $username;
         $this->key = $key;
     }
 
     public function onRun(): void
     {
-        $result = MinecartAPI::redeemKey($this->username, $this->key);
+        $result = $this->minecartAPI->redeemKey($this->username, $this->key);
 
         $this->setResult($result);
     }
@@ -39,7 +42,7 @@ class RedeemKeyAsync extends AsyncTask
             if ($statusCode == 200) {
                 $response = $response["response"];
 
-                if ($this->executeCommands($player, $response)) {
+                if ($this->executeCommands($response["commands"])) {
                     $messages = new Messages();
                     $messages->sendGlobalInfo($player, "vip", $response["group"]);
 
@@ -65,13 +68,11 @@ class RedeemKeyAsync extends AsyncTask
         }
     }
 
-    private function executeCommands(Player $player, array $response): bool
+    private function executeCommands(array $commands): bool
     {
         $result = true;
 
-        foreach ($response["commands"] as $command) {
-            $command = $this->parseText($command, $player, $response);
-
+        foreach ($commands as $command) {
             if (!Minecart::getInstance()->dispatchCommand($command)) {
                 $result = false;
             }

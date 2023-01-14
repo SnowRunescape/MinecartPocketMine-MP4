@@ -10,9 +10,17 @@ class AutomaticDelivery
     const ONLY_PLAYER_ONLINE = 1;
     const ANYTIME = 2;
 
+
+    private MinecartAPI $minecartAPI;
+
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI)
+    {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
+    }
+
     public function run(): void
     {
-        $minecartKeys = MinecartAPI::deliveryPending();
+        $minecartKeys = $this->minecartAPI->deliveryPending();
         $minecartKeys = $this->filterByAutomaticDelivery($minecartKeys);
 
         if (empty($minecartKeys)) {
@@ -21,7 +29,7 @@ class AutomaticDelivery
 
         $productsIds = array_column($minecartKeys, "id");
 
-        if (!MinecartAPI::deliveryConfirm($productsIds)) {
+        if (!$this->minecartAPI->deliveryConfirm($productsIds)) {
             return;
         }
 

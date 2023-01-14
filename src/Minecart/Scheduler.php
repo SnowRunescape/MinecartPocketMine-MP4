@@ -10,7 +10,7 @@ class Scheduler extends Task
 
     public function __construct()
     {
-        $this->automaticDelivery = new AutomaticDelivery();
+        $this->automaticDelivery = new AutomaticDelivery(Minecart::getInstance()->getMinecartAuthorizationAPI());
     }
 
     public function onRun(): void

@@ -7,21 +7,24 @@ use pocketmine\scheduler\AsyncTask;
 use Minecart\utils\Form;
 use Minecart\Minecart;
 use Minecart\MinecartAPI;
+use Minecart\MinecartAuthorizationAPI;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
 class RedeemCashAsync extends AsyncTask
 {
-    private $username;
+    private MinecartAPI $minecartAPI;
+    private string $username;
 
-    public function __construct(string $username)
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI, string $username)
     {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
         $this->username = $username;
     }
 
     public function onRun(): void
     {
-        $result = MinecartAPI::redeemCash($this->username);
+        $result = $this->minecartAPI->redeemCash($this->username);
 
         $this->setResult($result);
     }
@@ -37,9 +40,7 @@ class RedeemCashAsync extends AsyncTask
             if ($statusCode == 200) {
                 $response = $response["response"];
 
-                $command = $this->parseText($response["command"], $player, $response);
-
-                if (Minecart::getInstance()->dispatchCommand($command)) {
+                if (Minecart::getInstance()->dispatchCommand($response["command"])) {
                     $messages = new Messages();
                     $messages->sendGlobalInfo($player, "cash", $response["cash"]);
                 } else {

@@ -13,54 +13,61 @@ class MinecartAPI
 
     const DELAY = 60 * 20;
 
-    public static function myKeys(string $username): array
+    private MinecartAuthorizationAPI $minecartAuthorizationAPI;
+
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI)
     {
-        return MinecartAPI::send("/shop/player/mykeys", [
+        $this->minecartAuthorizationAPI = $minecartAuthorizationAPI;
+    }
+
+    public function myKeys(string $username): array
+    {
+        return $this->send("/shop/player/mykeys", [
             "username" => $username
         ]);
     }
 
-    public static function redeemCash(string $username): array
+    public function redeemCash(string $username): array
     {
-        return MinecartAPI::send("/shop/player/redeemcash", [
+        return $this->send("/shop/player/redeemcash", [
             "username" => $username
         ]);
     }
 
-    public static function redeemKey(string $username, string $key)
+    public function redeemKey(string $username, string $key)
     {
-        return MinecartAPI::send("/shop/player/redeemcash", [
+        return $this->send("/shop/player/redeemcash", [
             "username" => $username,
             "key" => $key
         ]);
     }
 
-    public static function deliveryPending(): array
+    public function deliveryPending(): array
     {
-        $result = MinecartAPI::send("/shop/delivery/pending");
+        $result = $this->send("/shop/delivery/pending");
 
         return $result["response"]["products"] ?? [];
     }
 
-    public static function deliveryConfirm(array $products): bool
+    public function deliveryConfirm(array $products): bool
     {
-        $result = MinecartAPI::send("/shop/delivery/confirm", [
+        $result = $this->send("/shop/delivery/confirm", [
             "products" => $products
         ]);
 
         return $result["statusCode"] == 200;
     }
 
-    private static function send(string $url, array $params = []): array
+    private function send(string $url, array $params = []): array
     {
         try {
             $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, MinecartAPI::BASE_URL . $url);
+            curl_setopt($curl, CURLOPT_URL, self::BASE_URL . $url);
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_HTTPHEADER, [
-                "Authorization: " . Minecart::getInstance()->getCfg("Minecart.ShopKey"),
-                "ShopServer: " . Minecart::getInstance()->getCfg("Minecart.ShopServer"),
+                "Authorization: {$this->minecartAuthorizationAPI->getAuthorization()}",
+                "ShopServer: {$this->minecartAuthorizationAPI->getShopServer()}",
                 "PluginVersion: " . Minecart::VERSION,
                 "Content-Type: application/x-www-form-urlencoded"
             ]);

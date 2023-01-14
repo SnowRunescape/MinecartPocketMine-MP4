@@ -34,9 +34,10 @@ class MyKeys extends Command
             return false;
         }
 
+        $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
         $playerName = $sender->getName();
 
-        Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new MyKeysAsync($playerName));
+        Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new MyKeysAsync($minecartAuthorizationAPI, $playerName));
 
         $messages = new Messages();
         $messages->sendWaitingResponseInfo($sender);

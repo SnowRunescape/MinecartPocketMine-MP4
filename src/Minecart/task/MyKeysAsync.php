@@ -7,19 +7,22 @@ use Minecart\utils\Form;
 use Minecart\utils\Errors;
 use Minecart\Minecart;
 use Minecart\MinecartAPI;
+use Minecart\MinecartAuthorizationAPI;
 
 class MyKeysAsync extends AsyncTask
 {
-    private $username;
+    private MinecartAPI $minecartAPI;
+    private string $username;
 
-    public function __construct(string $username)
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI, string $username)
     {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
         $this->username = $username;
     }
 
     public function onRun(): void
     {
-        $result = MinecartAPI::myKeys($this->username);
+        $result = $this->minecartAPI->myKeys($this->username);
 
         $this->setResult($result);
     }
