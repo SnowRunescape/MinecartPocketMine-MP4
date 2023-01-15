@@ -10,7 +10,6 @@ class AutomaticDelivery
     const ONLY_PLAYER_ONLINE = 1;
     const ANYTIME = 2;
 
-
     private MinecartAPI $minecartAPI;
 
     public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI)
@@ -40,15 +39,17 @@ class AutomaticDelivery
 
     private function filterByAutomaticDelivery(array $minecartKeys)
     {
+        $preventLoginDelivery = Minecart::getInstance()->getCfg("config.preventLoginDelivery", true);
+
         $tempMinecartKeys = [];
 
         foreach ($minecartKeys as $minecartKey) {
             if (
                 $minecartKey["delivery_automatic"] == AutomaticDelivery::ANYTIME || (
-                    !Minecart::getInstance()->getCfg("config.preventLoginDelivery") &&
+                    !$preventLoginDelivery &&
                     PlayerHelper::playerOnline($minecartKey["username"])
                 ) || (
-                    Minecart::getInstance()->getCfg("config.preventLoginDelivery") &&
+                    $preventLoginDelivery &&
                     PlayerHelper::playerOnline($minecartKey["username"]) &&
                     PlayerHelper::playerTimeOnline($minecartKey["username"]) > Minecart::TIME_PREVENT_LOGIN_DELIVERY
                 )
