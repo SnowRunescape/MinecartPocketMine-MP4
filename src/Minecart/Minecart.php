@@ -7,7 +7,6 @@ use pocketmine\utils\Config;
 use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
 use Minecart\listeners\PlayerListener;
-use Minecart\utils\Utils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\Language;
 
@@ -17,13 +16,14 @@ class Minecart extends PluginBase
 
     const TIME_PREVENT_LOGIN_DELIVERY = 120;
 
-    public array $messages = [];
-    public array $config = [];
+    private static Minecart $instance;
+
+    private MinecartAuthorizationAPI $minecartAuthorizationAPI;
+    private Config $messages;
+    private Config $config;
+
     public array $playerTimeOnline = [];
     public array $cooldown = [];
-
-    public static Minecart $instance;
-    public MinecartAuthorizationAPI $minecartAuthorizationAPI;
 
     public function onEnable(): void
     {
@@ -80,25 +80,29 @@ class Minecart extends PluginBase
     private function registerMessages(): void
     {
         $this->saveResource("messages.yml");
-        $messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
-        $this->messages = $messages->getAll();
+        $this->messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
     }
 
     private function registerConfig(): void
     {
         $this->saveResource("config.yml");
-        $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        $this->config = $config->getAll();
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
     }
 
     public function getMessage(string $key): string
     {
-        return Utils::getArrayKeyByString($this->messages, $key);
+        $message = $this->messages->getNested($key);
+
+        if (is_null($message)) {
+            $message = "§7Mensagem §c{$key} §7não encontrada";
+        }
+
+        return $message;
     }
 
-    public function getCfg(string $key): string
+    public function getCfg(string $key, $default = null)
     {
-        return Utils::getArrayKeyByString($this->config, $key);
+        return $this->config->getNested($key, $default);
     }
 
     public function dispatchCommand(string $command): bool
