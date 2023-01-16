@@ -2,7 +2,7 @@ waiting-response-info: '§7Aguardando resposta...'
 
 modal:
   title: 'Tem certeza?'
-  confirm-vip-message: '§7Caso aperte em §aSIM§7, será verificado se esta key §aVIP §7é válida. Se for válida, a key será ativada em sua conta e §cnão§7 poderá ser reutilizada novamente!'
+  confirm-key-message: '§7Caso aperte em §aSIM§7, será verificado se esta key §aKEY §7é válida. Se for válida, a key será ativada em sua conta e §cnão§7 poderá ser reutilizada novamente!'
   confirm-cash-message: '§7Caso aperte em §aSIM§7, será verificado se você possui algum §ecash §7para ativação. Caso possua, todo os §ecash §7que você comprou sera ativado em sua conta.'
 
 form:
@@ -10,7 +10,7 @@ form:
   placeholder: '§7Insira sua key'
 
 success:
-  player-list-keys-title: 'Central de keys VIPs'
+  player-list-keys-title: 'Central de keys'
   player-list-keys-key: '§b{key} §7- §a{key.group} §a{key.duration} dias'
   redeem-vip: '§7Parabéns §e{player.name}§7, para ver seus §aVIPS §7digite §c/MinhasKeys§7.'
   redeem-cash: '§7Parabéns §e{player.name}§7, para ver seu saldo de §aCASH §7digite §e/cash§7.'
