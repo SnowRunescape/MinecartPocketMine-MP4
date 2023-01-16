@@ -8,7 +8,7 @@ use Minecart\Minecart;
 
 class Messages
 {
-    public function sendWaitingResponseInfo(Player $player)
+    public function sendWaitingResponseInfo(Player $player): void
     {
         $mode = Minecart::getInstance()->getCfg("config.waiting_response_mode");
         $info = Minecart::getInstance()->getMessage("waiting-response-info");
@@ -26,7 +26,7 @@ class Messages
         }
     }
 
-    public function sendGlobalInfo(Player $player, string $type, string $info)
+    public function sendGlobalInfo(Player $player, string $type, string $info): void
     {
         if (!Minecart::getInstance()->getCfg("config.global_info")) {
             return;

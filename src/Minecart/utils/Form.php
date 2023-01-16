@@ -12,13 +12,13 @@ use Minecart\Minecart;
 
 class Form
 {
-    private $title;
+    private string $title;
     private $placeholder;
-    private $key = "";
-    private $redeemType;
-    private $products = [];
-    private $message;
-    private $cooldown;
+    private string $key = "";
+    private string $redeemType;
+    private array $products = [];
+    private string $message;
+    private Cooldown $cooldown;
 
     const REDEEM_KEY = 1;
     const REDEEM_CASH = 2;
@@ -234,7 +234,6 @@ class Form
         });
 
         if (!empty($this->products)) {
-            $i = 0;
             foreach ($this->products as $product) {
                 $info = Minecart::getInstance()->getMessage("success.player-list-keys-key");
 
@@ -244,7 +243,6 @@ class Form
                 $info = str_replace(["{key}", "{key.group}", "{key.duration}"], [$key, $group, $duration], $info);
 
                 $form->addButton($info);
-                $i++;
             }
         } else {
             $this->setTitle("Erro!");
