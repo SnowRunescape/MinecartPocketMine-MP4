@@ -36,7 +36,7 @@ class MinecartAPI
 
     public function redeemKey(string $username, string $key)
     {
-        return $this->send("/shop/player/redeemcash", [
+        return $this->send("/shop/player/redeemkey", [
             "username" => $username,
             "key" => $key
         ]);

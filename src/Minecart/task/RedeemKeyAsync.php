@@ -8,6 +8,7 @@ use Minecart\utils\Form;
 use Minecart\Minecart;
 use Minecart\MinecartAPI;
 use Minecart\MinecartAuthorizationAPI;
+use Minecart\MinecartLog;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
@@ -44,17 +45,17 @@ class RedeemKeyAsync extends AsyncTask
 
                 if ($this->executeCommands($response["commands"])) {
                     $messages = new Messages();
-                    $messages->sendGlobalInfo($player, "vip", $response["group"]);
+                    $messages->sendGlobalInfo($player, "key", $response["group"]);
 
                     $message = $this->parseText(Minecart::getInstance()->getMessage("success.active-key"), $player, $response);
                     $player->sendMessage($message);
                 } else {
-                    $error = $this->parseText(Minecart::getInstance()->getMessage("error.redeem-vip"), $player, $response);
+                    $error = $this->parseText(Minecart::getInstance()->getMessage("error.redeem-key"), $player, $response);
                     $player->sendMessage($error);
                 }
             } else {
                 $form = new Form();
-                $form->setTitle("Resgatar VIP");
+                $form->setTitle("Resgatar KEY");
                 $form->setPlaceholder("Insira sua key");
                 $form->setRedeemType(Form::REDEEM_KEY);
                 $form->setKey($this->key);
@@ -74,6 +75,7 @@ class RedeemKeyAsync extends AsyncTask
 
         foreach ($commands as $command) {
             if (!Minecart::getInstance()->dispatchCommand($command)) {
+                MinecartLog::executeCommand($command);
                 $result = false;
             }
         }

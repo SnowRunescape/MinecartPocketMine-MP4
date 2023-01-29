@@ -8,6 +8,7 @@ use Minecart\utils\Form;
 use Minecart\Minecart;
 use Minecart\MinecartAPI;
 use Minecart\MinecartAuthorizationAPI;
+use Minecart\MinecartLog;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
@@ -44,6 +45,7 @@ class RedeemCashAsync extends AsyncTask
                     $messages = new Messages();
                     $messages->sendGlobalInfo($player, "cash", $response["cash"]);
                 } else {
+                    MinecartLog::executeCommand($response["command"]);
                     $error = $this->parseText(Minecart::getInstance()->getMessage("error.redeem-cash"), $player, $response);
 
                     $player->sendMessage($error);

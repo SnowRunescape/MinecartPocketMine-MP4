@@ -80,7 +80,7 @@ class Form
             }
 
             switch ($data) {
-                case 0: //VIP
+                case 0: // KEY
                     $title = Minecart::getInstance()->getMessage("form.title");
                     $placeholder = Minecart::getInstance()->getMessage("form.placeholder");
 
@@ -89,7 +89,7 @@ class Form
                     $this->setRedeemType(self::REDEEM_KEY);
                     $this->showRedeem($player);
                     break;
-                case 1: //CASH
+                case 1: // CASH
                     $form = new ModalForm(function(Player $player, bool $data = null) {
                         if (is_null($data)) {
                             return;
@@ -131,7 +131,7 @@ class Form
         });
 
         $form->setTitle("Ativar");
-        $form->addButton("§eVIP");
+        $form->addButton("§eKEY");
         $form->addButton("§aCash");
 
         $player->sendForm($form);
@@ -188,7 +188,7 @@ class Form
                     });
 
                     $modal_title = Minecart::getInstance()->getMessage("modal.title");
-                    $message = Minecart::getInstance()->getMessage("modal.confirm-vip-message");
+                    $message = Minecart::getInstance()->getMessage("modal.confirm-key-message");
 
                     $form->setTitle($modal_title);
                     $form->setContent($message);
