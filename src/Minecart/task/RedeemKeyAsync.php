@@ -45,7 +45,7 @@ class RedeemKeyAsync extends AsyncTask
 
                 if ($this->executeCommands($response["commands"])) {
                     $messages = new Messages();
-                    $messages->sendGlobalInfo($player, "key", $response["group"]);
+                    $messages->sendGlobalInfo($player, "key", $response["product_name"]);
 
                     $message = $this->parseText(Minecart::getInstance()->getMessage("success.active-key"), $player, $response);
                     $player->sendMessage($message);
@@ -85,6 +85,6 @@ class RedeemKeyAsync extends AsyncTask
 
     private function parseText(string $text, Player $player, array $response): string
     {
-        return str_replace(["{player.name}", "{key.group}", "{key.duration}"], [$player->getName(), $response["group"], $response["duration"]], $text);
+        return str_replace(["{player.name}", "{key.product_name}"], [$player->getName(), $response["product_name"]], $text);
     }
 }

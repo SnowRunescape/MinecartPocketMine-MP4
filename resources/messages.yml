@@ -11,20 +11,20 @@ form:
 
 success:
   player-list-keys-title: 'Central de keys'
-  player-list-keys-key: '§b{key} §7- §a{key.group} §a{key.duration} dias'
+  player-list-keys-key: '§b{key.code} - §a{key.product_name}'
   redeem-key: '§7Parabéns §e{player.name}§7, para ver suas §aKEYS §7digite §c/MinhasKeys§7.'
   redeem-cash: '§7Parabéns §e{player.name}§7, para ver seu saldo de §aCASH §7digite §e/cash§7.'
-  active-key: '§7Parabens §e{player.name}§7, Você resgatou o produto &6&l{key.product_name}&7.'
+  active-key: '§7Parabens §e{player.name}§7, Você resgatou o produto §6§l{key.product_name}§7.'
   global-info-title: '§e{player.name}'
-  global-info-subtitle-key: '§7Tornou-se §a{key.group}'
-  global-info-subtitle-cash: '§7ativou §a{cash.quantity} §7de cash'
+  global-info-subtitle-key: '§7Ativou §a{key.product_name}'
+  global-info-subtitle-cash: '§7Ativou §a{cash.quantity} §7de cash'
 
 error:
   internal-error: '§cOcorreu um erro interno, entre em contato com um administrador!'
   invalid-shopkey: '§cO §6ShopKey §cconfigurado é invalido, entre em contato com um administrador!'
   invalid-shopserver: '§7O §6ShopServer §cconfigurado é invalido, entre em contato com um administrador!'
   cooldown: '§cAguarde {cooldown} segundos e tente novamente'
-  redeem-key: '&7Ocorreu um erro ao obter o produto &6&l{key.product_name}&7.'
+  redeem-key: '§7Ocorreu um erro ao obter o produto §6§l{key.product_name}§7.'
   redeem-cash: '§7Ocorreu um erro ao obter §a{cash.quantity} §7de §eCASH§7.'
   player-only: '§cApenas jogadores podem utilizar este comando!'
   player-dont-have-key: '§cVocê não possui nenhuma KEY.'

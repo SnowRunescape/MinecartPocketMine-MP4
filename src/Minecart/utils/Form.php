@@ -238,9 +238,8 @@ class Form
                 $info = Minecart::getInstance()->getMessage("success.player-list-keys-key");
 
                 $key = $product["key"];
-                $group = $product["group"];
-                $duration = $product["duration"];
-                $info = str_replace(["{key}", "{key.group}", "{key.duration}"], [$key, $group, $duration], $info);
+                $productName = $product["product_name"];
+                $info = str_replace(["{key.code}", "{key.product_name}"], [$key, $productName], $info);
 
                 $form->addButton($info);
             }

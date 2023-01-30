@@ -32,11 +32,15 @@ class Messages
             return;
         }
 
+        $config = ($type == "key") ?
+            "success.global-info-subtitle-key" :
+            "success.global-info-subtitle-cash";
+
         $title = Minecart::getInstance()->getMessage("success.global-info-title");
-        $subtitle = Minecart::getInstance()->getMessage($type == "key" ? "success.global-info-subtitle-key" : "success.global-info-subtitle-cash");
+        $subtitle = Minecart::getInstance()->getMessage($config);
 
         $title = str_replace("{player.name}", $player->getName(), $title);
-        $subtitle = str_replace(["{key.group}", "{cash.quantity}"], [$info, $info], $subtitle);
+        $subtitle = str_replace(["{key.product_name}", "{cash.quantity}"], [$info, $info], $subtitle);
 
         Minecart::getInstance()->getServer()->broadcastTitle($title, $subtitle);
 
