@@ -4,22 +4,23 @@ namespace Minecart\utils;
 
 use pocketmine\player\Player;
 use Minecart\Minecart;
+use Minecart\MinecartAPI;
 
 class Errors
 {
-    public function getError(Player $player, int $code, bool $return = false) : string
+    public function getError(Player $player, int $code, bool $return = false): string
     {
         switch ($code) {
-            case 40010:
+            case MinecartAPI::INVALID_KEY:
                 $message = Minecart::getInstance()->getMessage("error.invalid-key");
                 break;
-            case 40011:
+            case MinecartAPI::INVALID_SHOP_SERVER:
                 $message = Minecart::getInstance()->getMessage("error.invalid-shopserver");
                 break;
-            case 40012:
+            case MinecartAPI::DONT_HAVE_CASH:
                 $message = Minecart::getInstance()->getMessage("error.nothing-products-cash");
                 break;
-            case 40013:
+            case MinecartAPI::COMMANDS_NOT_REGISTRED:
                 $message = Minecart::getInstance()->getMessage("error.commands-product-not-registred");
                 break;
             case 401:

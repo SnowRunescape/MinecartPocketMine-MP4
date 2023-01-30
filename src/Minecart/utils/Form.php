@@ -7,20 +7,20 @@ use jojoe77777\FormAPI\ModalForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\player\Player;
 use Minecart\task\RedeemCashAsync;
-use Minecart\task\RedeemVipAsync;
+use Minecart\task\RedeemKeyAsync;
 use Minecart\Minecart;
 
 class Form
 {
-    private $title;
+    private string $title;
     private $placeholder;
-    private $key = "";
-    private $redeemType;
-    private $products = [];
-    private $message;
-    private $cooldown;
+    private string $key = "";
+    private string $redeemType;
+    private array $products = [];
+    private string $message;
+    private Cooldown $cooldown;
 
-    const REDEEM_VIP = 1;
+    const REDEEM_KEY = 1;
     const REDEEM_CASH = 2;
 
     public function __construct()
@@ -38,27 +38,27 @@ class Form
         $this->key = $key;
     }
 
-    public function setTitle(string $title) : void
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    public function setRedeemType(string $redeemType) : void
+    public function setRedeemType(string $redeemType): void
     {
         $this->redeemType = $redeemType;
     }
 
-    public function setProducts(array $products) : void
+    public function setProducts(array $products): void
     {
         $this->products = $products;
     }
 
-    public function setMessage(string $message) : void
+    public function setMessage(string $message): void
     {
         $this->message = $message;
     }
 
-    public function showFormError(Player $player) : void
+    public function showFormError(Player $player): void
     {
         $form = new SimpleForm(function(Player $player, int $data = null) {
             if (empty($data)) {
@@ -72,7 +72,7 @@ class Form
         $player->sendForm($form);
     }
 
-    public function showChoose(Player $player) : void
+    public function showChoose(Player $player): void
     {
         $form = new SimpleForm(function (Player $player, int $data = null) {
             if (is_null($data)) {
@@ -80,24 +80,23 @@ class Form
             }
 
             switch ($data) {
-                case 0: //VIP
+                case 0: // KEY
                     $title = Minecart::getInstance()->getMessage("form.title");
                     $placeholder = Minecart::getInstance()->getMessage("form.placeholder");
 
                     $this->setTitle($title);
                     $this->setPlaceholder($placeholder);
-                    $this->setRedeemType(self::REDEEM_VIP);
+                    $this->setRedeemType(self::REDEEM_KEY);
                     $this->showRedeem($player);
                     break;
-                case 1: //CASH
+                case 1: // CASH
                     $form = new ModalForm(function(Player $player, bool $data = null) {
                         if (is_null($data)) {
                             return;
                         }
 
+                        $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
                         $username = $player->getName();
-                        $authorization = Minecart::getInstance()->getCfg("Minecart.ShopKey");
-                        $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
 
                         if ($data) {
                             if ($this->cooldown->isInCooldown($player)) {
@@ -114,7 +113,7 @@ class Form
                             $messages->sendWaitingResponseInfo($player);
 
                             $this->cooldown->setPlayerInCooldown($player);
-                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($username, $authorization, $shopServer));
+                            Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemCashAsync($minecartAuthorizationAPI, $username));
                         }
                     });
 
@@ -132,15 +131,15 @@ class Form
         });
 
         $form->setTitle("Ativar");
-        $form->addButton("§eVIP");
+        $form->addButton("§eKEY");
         $form->addButton("§aCash");
 
         $player->sendForm($form);
     }
 
-    public function showRedeem(Player $player, string $error = "") : void
+    public function showRedeem(Player $player, string $error = ""): void
     {
-        $form = new CustomForm(function(Player $player, array $data = null){
+        $form = new CustomForm(function(Player $player, array $data = null) {
             if (empty($data)) {
                 return;
             }
@@ -162,18 +161,17 @@ class Form
                 $this->setTitle($this->title);
                 $this->setKey($key);
                 $this->setPlaceholder($this->placeholder);
-                $this->setRedeemType(self::REDEEM_VIP);
+                $this->setRedeemType(self::REDEEM_KEY);
                 $this->showRedeem($player, $error);
                 return;
             }
 
+            $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
             $username = $player->getName();
-            $authorization = Minecart::getInstance()->getCfg("Minecart.ShopKey");
-            $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
 
             switch ($this->redeemType) {
-                case self::REDEEM_VIP:
-                    $form = new ModalForm(function(Player $player, bool $data = null) use ($username, $authorization, $shopServer, $key){
+                case self::REDEEM_KEY:
+                    $form = new ModalForm(function(Player $player, bool $data = null) use ($minecartAuthorizationAPI, $username, $key) {
                         if (empty($data)) {
                             return;
                         }
@@ -184,13 +182,13 @@ class Form
                                 $messages->sendWaitingResponseInfo($player);
 
                                 $this->cooldown->setPlayerInCooldown($player);
-                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemVipAsync($username, $key, $authorization, $shopServer));
+                                Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new RedeemKeyAsync($minecartAuthorizationAPI, $username, $key));
                                 break;
                         }
                     });
 
                     $modal_title = Minecart::getInstance()->getMessage("modal.title");
-                    $message = Minecart::getInstance()->getMessage("modal.confirm-vip-message");
+                    $message = Minecart::getInstance()->getMessage("modal.confirm-key-message");
 
                     $form->setTitle($modal_title);
                     $form->setContent($message);
@@ -215,7 +213,7 @@ class Form
     }
 
 
-    public function showMyKeys(Player $player) : void
+    public function showMyKeys(Player $player): void
     {
         $form = new SimpleForm(function(Player $player, int $data = null) {
             if (is_null($data)) {
@@ -230,23 +228,20 @@ class Form
             $this->setTitle($title);
             $this->setPlaceholder($placeholder);
             $this->setKey($key);
-            $this->setRedeemType(self::REDEEM_VIP);
+            $this->setRedeemType(self::REDEEM_KEY);
             $this->showRedeem($player);
             $this->cooldown->removePlayerCooldown($player);
         });
 
         if (!empty($this->products)) {
-            $i = 0;
             foreach ($this->products as $product) {
                 $info = Minecart::getInstance()->getMessage("success.player-list-keys-key");
 
                 $key = $product["key"];
-                $group = $product["group"];
-                $duration = $product["duration"];
-                $info = str_replace(["{key}", "{key.group}", "{key.duration}"], [$key, $group, $duration], $info);
+                $productName = $product["product_name"];
+                $info = str_replace(["{key.code}", "{key.product_name}"], [$key, $productName], $info);
 
                 $form->addButton($info);
-                $i++;
             }
         } else {
             $this->setTitle("Erro!");

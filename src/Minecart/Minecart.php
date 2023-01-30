@@ -2,71 +2,113 @@
 
 namespace Minecart;
 
-use Minecart\commands\Redeem;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use Minecart\commands\Redeem;
 use Minecart\commands\MyKeys;
-use Minecart\utils\Configuration;
-use Minecart\utils\Messages;
+use Minecart\listeners\PlayerListener;
+use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\Language;
 
 class Minecart extends PluginBase
 {
-    const VERSION = "2.1.0";
+    const VERSION = "2.3.0";
 
-    public $messages = [];
-    public $config = [];
+    const TIME_PREVENT_LOGIN_DELIVERY = 120;
 
-    public $cooldown = [];
+    private static Minecart $instance;
 
-    public static $instance;
+    private MinecartAuthorizationAPI $minecartAuthorizationAPI;
+    private Config $messages;
+    private Config $config;
 
-    public function onEnable() : void
+    public array $playerTimeOnline = [];
+    public array $cooldown = [];
+
+    public function onEnable(): void
     {
         $this->registerInstance();
-        $this->registerCommands();
         $this->registerConfig();
         $this->registerMessages();
+        $this->registerMinecartAuthorizationAPI();
+        $this->registerEvents();
+        $this->registerCommands();
+        $this->registerSchedulers();
 
         $this->getServer()->getLogger()->info("§7Plugin §aMinecart§7 ativado com sucesso!");
     }
 
-    public function registerCommands() : void
+    private function registerMinecartAuthorizationAPI(): void
+    {
+        $this->minecartAuthorizationAPI = new MinecartAuthorizationAPI(
+            $this->getCfg("Minecart.ShopKey"),
+            $this->getCfg("Minecart.ShopServer")
+        );
+    }
+
+    private function registerCommands(): void
     {
         $this->getServer()->getCommandMap()->register("mykeys", new MyKeys());
         $this->getServer()->getCommandMap()->register("redeem", new Redeem());
     }
 
-    public function registerInstance() : void
+    private function registerEvents()
+    {
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
+    }
+
+    private function registerSchedulers()
+    {
+        $this->getScheduler()->scheduleRepeatingTask(new Scheduler($this), MinecartAPI::DELAY);
+    }
+
+    private function registerInstance(): void
     {
         self::$instance = $this;
     }
 
-    public static function getInstance() : Minecart
+    public static function getInstance(): Minecart
     {
         return self::$instance;
     }
 
-    public function registerMessages() : void
+    public function getMinecartAuthorizationAPI(): MinecartAuthorizationAPI
+    {
+        return $this->minecartAuthorizationAPI;
+    }
+
+    private function registerMessages(): void
     {
         $this->saveResource("messages.yml");
-        $messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
-        $this->messages = $messages->getAll();
+        $this->messages = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
     }
 
-    public function registerConfig() : void
+    private function registerConfig(): void
     {
         $this->saveResource("config.yml");
-        $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        $this->config = $config->getAll();
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
     }
 
-    public function getMessage(string $key) : string
+    public function getMessage(string $key): string
     {
-        return Messages::getMessage($key);
+        $message = $this->messages->getNested($key);
+
+        if (is_null($message)) {
+            $message = "§7Mensagem §c{$key} §7não encontrada";
+        }
+
+        return $message;
     }
 
-    public function getCfg(string $key) : string
+    public function getCfg(string $key, $default = null)
     {
-        return Configuration::getConfig($key);
+        return $this->config->getNested($key, $default);
+    }
+
+    public function dispatchCommand(string $command): bool
+    {
+        $consoleCommandSender = new ConsoleCommandSender($this->getServer(), new Language("eng"));
+
+        return $this->getServer()->dispatchCommand($consoleCommandSender, $command);
     }
 }

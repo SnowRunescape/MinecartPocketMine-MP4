@@ -4,35 +4,30 @@ namespace Minecart\task;
 
 use pocketmine\scheduler\AsyncTask;
 use Minecart\utils\Form;
-use Minecart\utils\API;
 use Minecart\utils\Errors;
 use Minecart\Minecart;
+use Minecart\MinecartAPI;
+use Minecart\MinecartAuthorizationAPI;
 
 class MyKeysAsync extends AsyncTask
 {
-    private $username;
-    private $authorization;
-    private $shopServer;
+    private MinecartAPI $minecartAPI;
+    private string $username;
 
-    public function __construct(string $username, string $authorization, string $shopServer)
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI, string $username)
     {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
         $this->username = $username;
-        $this->authorization = $authorization;
-        $this->shopServer = $shopServer;
     }
 
-    public function onRun() : void
+    public function onRun(): void
     {
-        $api = new API();
-        $api->setAuthorization($this->authorization);
-        $api->setShopServer($this->shopServer);
-        $api->setParams(["username" => $this->username]);
-        $api->setURL(API::MYKEYS_URI);
+        $result = $this->minecartAPI->myKeys($this->username);
 
-        $this->setResult($api->send());
+        $this->setResult($result);
     }
 
-    public function onCompletion() : void
+    public function onCompletion(): void
     {
         $player = Minecart::getInstance()->getServer()->getPlayerExact($this->username);
         $response = $this->getResult();

@@ -9,7 +9,7 @@ class Cooldown
 {
     const COOLDOWN = 5;
 
-    public function isInCooldown(Player $player) : bool
+    public function isInCooldown(Player $player): bool
     {
         $playerName = strtolower($player->getName());
 
@@ -20,13 +20,13 @@ class Cooldown
         return false;
     }
 
-    public function setPlayerInCooldown(Player $player) : void
+    public function setPlayerInCooldown(Player $player): void
     {
         $playerName = strtolower($player->getName());
         Minecart::getInstance()->cooldown[$playerName] = time();
     }
 
-    public function removePlayerCooldown(Player $player) : void
+    public function removePlayerCooldown(Player $player): void
     {
         $playerName = strtolower($player->getName());
 
@@ -35,7 +35,7 @@ class Cooldown
         }
     }
 
-    public function getCooldownTime(Player $player) : int
+    public function getCooldownTime(Player $player): int
     {
         $playerName = strtolower($player->getName());
 

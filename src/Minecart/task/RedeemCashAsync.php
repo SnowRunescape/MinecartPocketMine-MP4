@@ -2,41 +2,35 @@
 
 namespace Minecart\task;
 
-use pocketmine\console\ConsoleCommandSender;
 use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\lang\Language;
 use Minecart\utils\Form;
-use Minecart\utils\API;
 use Minecart\Minecart;
+use Minecart\MinecartAPI;
+use Minecart\MinecartAuthorizationAPI;
+use Minecart\MinecartLog;
 use Minecart\utils\Errors;
 use Minecart\utils\Messages;
 
 class RedeemCashAsync extends AsyncTask
 {
-    private $username;
-    private $authorization;
-    private $shopServer;
+    private MinecartAPI $minecartAPI;
+    private string $username;
 
-    public function __construct(string $username, string $authorization, string $shopServer)
+    public function __construct(MinecartAuthorizationAPI $minecartAuthorizationAPI, string $username)
     {
+        $this->minecartAPI = new MinecartAPI($minecartAuthorizationAPI);
         $this->username = $username;
-        $this->authorization = $authorization;
-        $this->shopServer = $shopServer;
     }
 
-    public function onRun() : void
+    public function onRun(): void
     {
-        $api = new API();
-        $api->setAuthorization($this->authorization);
-        $api->setShopServer($this->shopServer);
-        $api->setParams(["username" => $this->username]);
-        $api->setURL(API::REDEEMCASH_URI);
+        $result = $this->minecartAPI->redeemCash($this->username);
 
-        $this->setResult($api->send());
+        $this->setResult($result);
     }
 
-    public function onCompletion() : void
+    public function onCompletion(): void
     {
         $player = Minecart::getInstance()->getServer()->getPlayerExact($this->username);
         $response = $this->getResult();
@@ -47,12 +41,11 @@ class RedeemCashAsync extends AsyncTask
             if ($statusCode == 200) {
                 $response = $response["response"];
 
-                $command = $this->parseText($response["command"], $player, $response);
-
-                if (Minecart::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(Minecart::getInstance()->getServer(), new Language("eng")), $command)) {
+                if (Minecart::getInstance()->dispatchCommand($response["command"])) {
                     $messages = new Messages();
                     $messages->sendGlobalInfo($player, "cash", $response["cash"]);
                 } else {
+                    MinecartLog::executeCommand($response["command"]);
                     $error = $this->parseText(Minecart::getInstance()->getMessage("error.redeem-cash"), $player, $response);
 
                     $player->sendMessage($error);
@@ -72,7 +65,7 @@ class RedeemCashAsync extends AsyncTask
         }
     }
 
-    private function parseText(string $text, Player $player, array $response) : string
+    private function parseText(string $text, Player $player, array $response): string
     {
         return str_replace(["{player.name}", "{cash.quantity}"], [$player->getName(), $response["cash"]], $text);
     }

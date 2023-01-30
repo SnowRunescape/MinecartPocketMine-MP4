@@ -18,7 +18,7 @@ class MyKeys extends Command
         $this->setAliases(["minhaskeys"]);
     }
 
-    public function execute(CommandSender $sender, string $label, array $args) : bool
+    public function execute(CommandSender $sender, string $label, array $args): bool
     {
         if (!$sender instanceof Player) {
             $sender->sendMessage(Minecart::getInstance()->getMessage("error.player-only"));
@@ -34,10 +34,10 @@ class MyKeys extends Command
             return false;
         }
 
+        $minecartAuthorizationAPI = Minecart::getInstance()->getMinecartAuthorizationAPI();
         $playerName = $sender->getName();
-        $authorization = Minecart::getInstance()->getCfg("Minecart.ShopKey");
-        $shopServer = Minecart::getInstance()->getCfg("Minecart.ShopServer");
-        Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new MyKeysAsync($playerName, $authorization, $shopServer));
+
+        Minecart::getInstance()->getServer()->getAsyncPool()->submitTask(new MyKeysAsync($minecartAuthorizationAPI, $playerName));
 
         $messages = new Messages();
         $messages->sendWaitingResponseInfo($sender);
